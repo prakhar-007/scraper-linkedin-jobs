@@ -15,3 +15,18 @@
 + Scrap without login to linkedin
 + Dumping `output file`, `log file`
 + Integeration with `gspread` library for sending the output to google sheet [link](https://docs.google.com/spreadsheets/d/1RegbfLIgMk6qH6NAKWdSa6Of9nqTc9qLRO04JQoeX_w/edit?usp=sharing)
+
+
+**Linkedin Jobs Page**
+
++ `Job Title`
++ `Job Post URL`
++ `Job Listed`
++ `Company Name`
++ `Company Page URL`
++ `Job Location`
++ `Seniority level`
++ `Employment type`
++ `Job function`
++ `Industries`
++ `Job Poster Information`
