@@ -18,6 +18,9 @@ logger = logging.basicConfig(level = logging.INFO, filename='jobs.log',format= '
 class LinkedinJobs(scrapy.Spider):
     name = 'job_details'
     api_url = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?f_WT=2&location=Worldwide&origin=JOB_SEARCH_PAGE_JOB_FILTER&refresh=true&start='
+    # Above url is used as starting url to start the crawler (having 25 job posts)
+    # with the initial value of first_job_page as 0 which will feed '&start=0', 
+    # then will keep increasing the 25,50 and so on
     
     def start_requests(self) -> Iterable[Request]:
           first_job_page = 0
@@ -27,10 +30,8 @@ class LinkedinJobs(scrapy.Spider):
     def parse(self, response):
         
         first_job_page = response.meta['first_job_page']
-
         job_item = {}
         jobs = response.css('li')
-        
         num_jobs_returned = len(jobs)
         
         
@@ -44,10 +45,9 @@ class LinkedinJobs(scrapy.Spider):
             job_item['company_link'] = job.css('h4 a::attr(href)').get(default='not-found')
             job_item['company_location'] = job.css('.job-search-card__location::text').get(default='not-found').strip()
             
-            try:
+            try: #this block of code handles the scraping part by going to job_detail_url and fetching required info using bs4
                 URL = job.css(".base-card__full-link::attr(href)").get(default='not-found').strip()
                 r = requests.get(URL) 
-    
                 soup = BeautifulSoup(r.content, 'html.parser')
                 
                 job_type = soup.find_all('span', attrs = {'class':'description__job-criteria-text description__job-criteria-text--criteria'}) 
@@ -65,7 +65,7 @@ class LinkedinJobs(scrapy.Spider):
                 job_item['Industries'] = 'not-found'
                 job_item['Job Poster Information'] = 'not-found'
             
-            
+            #using append_row method to add each row automatically in the gspread spreadsheet
             sh.append_row([job_item['job_title'], 
                            job_item['job_detail_url'],
                            job_item['job_listed'],
